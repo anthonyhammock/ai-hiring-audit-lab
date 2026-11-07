@@ -1,0 +1,5 @@
+garak==0.17.1
+pyrit==1.1.0
+scikit-learn
+scipy
+jupyterlab
