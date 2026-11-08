@@ -1,0 +1,5 @@
+# Optional real model for Colab (PyTorch is preinstalled there): Qwen2.5-0.5B-Instruct via transformers.
+# In a Codespace prefer requirements-llamacpp.txt: a PyPI torch install is several GB.
+-r requirements.txt
+transformers>=5.14.1,<5.20
+huggingface_hub>=1.0

@@ -1,0 +1,5 @@
+# Optional real model for Codespaces: Qwen2.5-0.5B-Instruct (GGUF, q4_k_m, ~490 MB) on CPU.
+# llama-cpp-python builds from source on install (a few minutes on a 2-core Codespace).
+-r requirements.txt
+llama-cpp-python==0.3.36
+huggingface_hub>=1.0

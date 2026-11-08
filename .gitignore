@@ -1,3 +1,9 @@
 .ipynb_checkpoints/
 __pycache__/
 *.jsonl
+logs/
+*.db
+.blind/
+.venv/
+node_modules/
+.promptfoo/
