@@ -106,20 +106,24 @@ class MockLLM:
 
     def __init__(self, seed: int = 0):
         self.seed = seed
+        self.chat_calls = 0
         self.rng = random.Random(seed)
 
     def reseed(self, seed: int) -> None:
         self.seed = seed
+        self.chat_calls = 0
 
     def chat(self, messages: list[dict], max_tokens: int | None = None) -> str:
         system, user = messages[0]["content"], messages[1]["content"]
-        # Draws depend only on (seed, prompt), so the same input under the same seed always
-        # behaves the same, whatever order you run things in.
-        key = hashlib.sha256(f"{self.seed}|{system}|{user}".encode()).hexdigest()
-        self.rng = random.Random(key)
+        # Screening: draws depend only on (seed, prompt), so every step of one screening agrees.
+        # Chat: draws also depend on a call counter, so repeated identical prompts (as red-team
+        # tools send them) are independent trials, yet the sequence is fixed for a given seed.
         if "Résumé:" in user:
+            self.rng = random.Random(hashlib.sha256(f"{self.seed}|{system}|{user}".encode()).hexdigest())
             out = self._screen(system, user, messages)
         else:
+            self.chat_calls += 1
+            self.rng = random.Random(hashlib.sha256(f"{self.seed}|{self.chat_calls}|{system}|{user}".encode()).hexdigest())
             out = self._chat(system, user)
         return out if max_tokens is None else out[: max_tokens * 4]
 

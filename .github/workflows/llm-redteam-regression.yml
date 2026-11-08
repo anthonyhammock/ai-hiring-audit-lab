@@ -1,0 +1,53 @@
+# Module 11, Lesson 04: a working CI regression suite for an LLM app.
+# It starts the real lab target (ToyScreen, mock model, hardened mode) on the runner, then replays
+# confirmed attacks with promptfoo 10 times each and fails the job if any run leaks.
+# Learners: in your fork, change TOYSCREEN_MODE to "vulnerable" on a branch and open a pull request
+# to watch the gate fail.
+name: llm-redteam-regression
+on:
+  pull_request:
+    paths: ['toyscreen/**', 'm11-redteam-tools/**', '.github/workflows/llm-redteam-regression.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TOYSCREEN_MODE: hardened
+      TOYSCREEN_BACKEND: mock
+      PROMPTFOO_DISABLE_TELEMETRY: '1'
+      PROMPTFOO_DISABLE_UPDATE: '1'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install ToyScreen
+        run: pip install -r toyscreen/requirements.txt
+      - name: ToyScreen smoke tests
+        run: cd toyscreen && python -m pytest -q
+      - name: Start lab assistant (ToyScreen on 127.0.0.1:8080)
+        run: bash m11-redteam-tools/scripts/start_lab_assistant.sh
+      - name: Run confirmed-attack regression suite
+        env:
+          PROMPTFOO_DISABLE_REDTEAM_REMOTE_GENERATION: 'true'
+          PROMPTFOO_PASS_RATE_THRESHOLD: '100'
+        run: |
+          cd m11-redteam-tools
+          npx -y promptfoo@0.125.1 eval -c promptfoo/redteam/regression.yaml --repeat 10 --no-cache -o results.json
+      - name: Keep the results as evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: redteam-regression-results
+          path: |
+            m11-redteam-tools/results.json
+            toyscreen/logs/
+      - name: Stop lab assistant
+        if: always()
+        run: bash m11-redteam-tools/scripts/stop_lab_assistant.sh

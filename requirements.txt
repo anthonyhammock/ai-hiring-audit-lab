@@ -3,3 +3,11 @@ pyrit==1.1.0
 scikit-learn
 scipy
 jupyterlab
+# Lab folders (see each folder's README)
+pypdf==7.0.0
+python-docx==1.2.0
+pytest==9.2.0
+mcp==2.3.0
+pyjwt[crypto]==2.15.1
+pandas
+statsmodels

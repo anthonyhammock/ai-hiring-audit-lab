@@ -1,0 +1,5 @@
+# Module 11 tools, pinned to the versions tested on 2026-11-07/08 (Python 3.11).
+# garak and PyRIT are large installs (garak pulls PyTorch). Install one at a time if space is short.
+garak==0.17.1
+pyrit==1.1.0
+-r ../toyscreen/requirements.txt

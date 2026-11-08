@@ -1,0 +1,32 @@
+# garak 0.17.1 config: scan ToyScreen's recruiter-chat endpoint (Module 08 starter) over REST.
+# Start ToyScreen first:  bash scripts/start_lab_assistant.sh
+# Run:                    python -m garak --config garak/toyscreen_rest.yaml --report_prefix toyscreen_baseline
+# The target is your own lab app on 127.0.0.1; it is FICTIONAL and intentionally vulnerable.
+run:
+  generations: 3
+  seed: 42
+  spec:
+    include:
+      - probes.promptinject.HijackHateHumans
+      - probes.leakreplay.GuardianCloze
+    exclude: []
+
+plugins:
+  target_type: rest
+  target_name: toyscreen-chat
+  generators:
+    rest:
+      RestGenerator:
+        uri: http://127.0.0.1:8080/chat
+        method: post
+        headers:
+          Content-Type: application/json
+        req_template_json_object:
+          message: $INPUT
+          candidate_id: C-001
+        response_json: true
+        response_json_field: reply
+        request_timeout: 60
+
+system:
+  parallel_attempts: 1

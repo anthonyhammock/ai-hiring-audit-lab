@@ -1,7 +1,17 @@
 {
   "name": "AI Hiring Audit Lab (online)",
   "image": "mcr.microsoft.com/devcontainers/python:1-3.11-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "22" }
+  },
   "postCreateCommand": "pip install --no-cache-dir -r requirements.txt",
+  "forwardPorts": [8080, 8000, 9000, 9001],
+  "portsAttributes": {
+    "8080": { "label": "ToyScreen chat (M08/M11)", "onAutoForward": "silent" },
+    "8000": { "label": "MCP server, HTTP (M15)", "onAutoForward": "silent" },
+    "9000": { "label": "OIDC lab IdP (M17)", "onAutoForward": "silent" },
+    "9001": { "label": "OIDC lab client (M17)", "onAutoForward": "silent" }
+  },
   "customizations": {
     "vscode": {
       "extensions": [
