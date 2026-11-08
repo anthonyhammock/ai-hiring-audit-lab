@@ -2,7 +2,7 @@
 
 ## What this repository is
 
-Teaching notebooks for an AI red-teaming course. They run security tools (garak, PyRIT) against small models you run yourself and against toy targets defined in the notebooks. All data is synthetic. Nothing here should be pointed at a system you do not own or have written permission to test.
+Teaching labs for an AI red-teaming course. They contain **intentionally vulnerable** software (ToyScreen, the MCP agent, the HR helper, the OIDC lab) and run security tools (garak, PyRIT, promptfoo, gitleaks) against small models you run yourself and against those lab targets. All data is synthetic and every secret is fake. Nothing here should be pointed at a system you do not own or have written permission to test.
 
 ## Reporting a vulnerability
 
@@ -12,5 +12,5 @@ Please include the file, the problem, and how to reproduce it. We aim to acknowl
 
 ## Out of scope
 
-- Findings in the deliberately weak toy targets inside the notebooks: they are meant to fail.
+- Findings in the deliberately weak lab targets (`toyscreen/`, `m15-mcp-agent/`, `m16-audit-validation/`, `m17-identity/oidc-lab/`) or the toy targets inside the notebooks: they are meant to fail. Do report a weakness that escapes the lab, for example code that would send real email or reach the network when it should not.
 - Vulnerabilities in garak, PyRIT or other upstream tools: report those to their own projects.
