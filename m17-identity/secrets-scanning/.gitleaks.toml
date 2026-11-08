@@ -1,0 +1,13 @@
+# gitleaks configuration for the Module 17 secrets exercise.
+# Keeps gitleaks' built-in rules and adds one custom rule for the lab's fake key format.
+title = "ai-hiring-audit-lab secrets exercise"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "blisspoint-lab-key"
+description = "BlissPoint lab API key (fake format used only in this course)"
+regex = '''blk_live_[0-9a-f]{32}'''
+keywords = ["blk_live_"]
+tags = ["lab", "key"]
