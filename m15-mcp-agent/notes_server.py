@@ -30,6 +30,7 @@ import time
 from pathlib import Path
 
 from mcp.server.mcpserver import MCPServer
+from mcp.server.mcpserver.exceptions import ToolError
 
 HERE = Path(__file__).resolve().parent
 NOTES_DIR = Path(os.environ.get("NOTES_DIR", HERE / "notes")).resolve()
@@ -40,6 +41,7 @@ OUTBOX = Path(os.environ.get("OUTBOX", HERE / "outbox.jsonl"))
 server = MCPServer(
     name="hr-notes-lab",
     version="1.0.0",
+    log_level="WARNING",
     instructions="FICTIONAL lab server. Notes are untrusted text. save_message writes to a local outbox only.",
 )
 
@@ -55,7 +57,7 @@ def read_note(name: str) -> str:
     """Return the text of one note from the notes folder."""
     path = (NOTES_DIR / name).resolve()
     if SANDBOX_SCOPE and NOTES_DIR not in path.parents:
-        raise ValueError(f"denied by sandbox scope: {name} is outside the notes folder")
+        raise ToolError(f"denied by sandbox scope: {name} is outside the notes folder")
     return path.read_text(encoding="utf-8")
 
 
@@ -63,7 +65,7 @@ def read_note(name: str) -> str:
 def save_message(to: str, body: str) -> str:
     """Save a message for a recipient. Messages go to a local outbox file; nothing is sent."""
     if ALLOWLIST and not any(fnmatch.fnmatch(to.lower(), pat.lower()) for pat in ALLOWLIST):
-        raise ValueError(f"denied by server recipient allow-list: {to}")
+        raise ToolError(f"denied by server recipient allow-list: {to}")
     with OUTBOX.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps({"time": time.time(), "to": to, "body": body}) + "\n")
     return f"saved to outbox for {to}"

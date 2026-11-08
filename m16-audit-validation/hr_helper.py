@@ -21,6 +21,7 @@ import re
 
 from mcp import Client
 from mcp.server.mcpserver import MCPServer
+from mcp.server.mcpserver.exceptions import ToolError
 
 POLICIES = {
     "HR-001": "Leave policy (FICTIONAL): employees accrue 1.5 days of paid leave per month.",
@@ -48,14 +49,14 @@ def _defect(variant: dict, cls: str) -> dict | None:
 
 
 def make_server(variant: dict, outbox: list) -> MCPServer:
-    server = MCPServer(name="hr-helper-lab", version="1.0.0")
+    server = MCPServer(name="hr-helper-lab", version="1.0.0", log_level="WARNING")
     role_defect = _defect(variant, "lookup_ignores_role")
 
     @server.tool()
     def read_policy(doc_id: str) -> str:
         """Return the text of an HR policy document."""
         if doc_id not in POLICIES:
-            raise ValueError(f"no such policy {doc_id}")
+            raise ToolError(f"no such policy {doc_id}")
         return POLICIES[doc_id]
 
     @server.tool()
@@ -63,7 +64,7 @@ def make_server(variant: dict, outbox: list) -> MCPServer:
         """Look up an employee. Only callers with role hr-admin see salary and home address."""
         rec = EMPLOYEES.get(name)
         if rec is None:
-            raise ValueError(f"no such employee {name}")
+            raise ToolError(f"no such employee {name}")
         full = caller_role == "hr-admin"
         if role_defect:
             trig = role_defect["trigger"]
